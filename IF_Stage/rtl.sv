@@ -9,24 +9,20 @@ module if_stage (
     output logic [31:0] pc_new
 );
 
-    logic [31:0] pc;
+    // Next sequential PC
+    assign pc_new = address + 32'd4;
 
-    // Calculate the next sequential PC
-    assign pc_new = pc + 32'd4;
-
-    // Select the next PC: branch/jump target or PC + 4
+    // Program counter register
     always_ff @(posedge clk or posedge reset) begin
         if (reset)
-            pc <= 32'h8000_0000;
+            address <= 32'h8000_0000;
         else if (!stall) begin
             if (and_out)
-                pc <= pc_signed_offset;
+                address <= pc_signed_offset;
             else
-                pc <= pc + 32'd4;
+                address <= pc_new;
         end
     end
 
-    // Current instruction address
-    assign address = pc;
-
 endmodule
+
